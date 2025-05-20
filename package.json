@@ -1,0 +1,12 @@
+{
+  "name": "evecompanion-sdeprocessor",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "author": "Jonas Schlabertz <jonas@schlabertz.de>",
+  "license": "MPL-2.0",
+  "dependencies": {
+    "sqlite3": "^5.1.7"
+  },
+  "private": true
+}
