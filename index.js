@@ -134,7 +134,7 @@ async function generateSolarSystemDistancesTable() {
     console.log("Generating solar system distances");
 
     let lowsecSystems = await new Promise((res, rej) => {
-        db.all("SELECT * FROM mapSolarSystems AS system WHERE system.security <= 0.4 AND system.regionID != 10000070 AND system.regionID != 10000019 AND system.regionID != 10000004 AND system.regionID != 10000017 AND system.regionID < 11000001", (err, result) => {
+        db.all("SELECT * FROM mapSolarSystems AS system WHERE system.security <= 0.4 AND system.regionID != 10000070 AND system.regionID != 10000019 AND system.regionID != 10000004 AND system.regionID != 10000017 AND system.regionID < 11000001 AND system.solarSystemID != 30100000", (err, result) => {
             if(err) {
                 rej(err);
             } else {
