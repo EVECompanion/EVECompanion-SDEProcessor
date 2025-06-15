@@ -1,5 +1,7 @@
 const fs = require("fs");
 const sqlite = require("sqlite3");
+const yaml = require("yaml");
+const { StringDecoder } = require('node:string_decoder');
 
 const MAX_LY_RANGE = 9460000000000000 * 12;
 
@@ -7,6 +9,8 @@ const requiredTables = [
     "dgmAttributeTypes", 
     "dgmAttributeCategories",
     "dgmTypeAttributes", 
+    "dgmTypeEffects",
+    "dgmEffects",
     "invGroups", 
     "invCategories", 
     "invTypes",
@@ -32,6 +36,7 @@ if(process.argv.length < 4) {
 
 const sourceFile = process.argv[2];
 const targetFile = process.argv[3];
+const effectsFile = process.argv[4];
 
 console.log(sourceFile);
 console.log(targetFile);
@@ -72,6 +77,7 @@ db.all("select name from sqlite_master where type='table'", (err, tables) => {
     }
 
     Promise.all(promises).then(async () => {
+        await addEffectCategories();
         await generateSkillRequirementsAttributeMappingTable();
         await generateSolarSystemDistancesTable();
         console.log("Running VACUUM Command.")
@@ -88,6 +94,31 @@ db.all("select name from sqlite_master where type='table'", (err, tables) => {
         });
     });
 });
+
+async function addEffectCategories() {
+    const file = fs.readFileSync(effectsFile, 'utf8');
+    let effectsYaml = yaml.parse(file);
+
+    for(let effectKey of Object.keys(effectsYaml)) {
+        let category = effectsYaml[effectKey].effectCategory;
+
+        if(category) {
+            await alterEffectCategory(effectKey, category);
+        }
+    }
+}
+
+async function alterEffectCategory(effectId, category) {
+    await new Promise((res, rej) => {
+        db.exec(`UPDATE dgmEffects SET effectCategory = ${category} WHERE effectID = ${effectId}`, (err, result) => {
+                if(err) {
+                    rej(err);
+                } else {
+                    res(result);
+                }
+            });
+    })
+}
 
 async function generateSkillRequirementsAttributeMappingTable() {
     class AttributeMapEntry {

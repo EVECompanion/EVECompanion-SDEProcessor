@@ -6,7 +6,8 @@
   "author": "Jonas Schlabertz <jonas@schlabertz.de>",
   "license": "MPL-2.0",
   "dependencies": {
-    "sqlite3": "^5.1.7"
+    "sqlite3": "^5.1.7",
+    "yaml": "^2.8.0"
   },
   "private": true
 }
