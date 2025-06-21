@@ -35,8 +35,9 @@ if(process.argv.length < 4) {
 }
 
 const sourceFile = process.argv[2];
-const targetFile = process.argv[3];
-const effectsFile = process.argv[4];
+const effectsFile = process.argv[3];
+const typesFile = process.argv[4];
+const targetFile = process.argv[5];
 
 console.log(sourceFile);
 console.log(targetFile);
@@ -78,6 +79,7 @@ db.all("select name from sqlite_master where type='table'", (err, tables) => {
 
     Promise.all(promises).then(async () => {
         await addEffectCategories();
+        await addTypeRadii();
         await generateSkillRequirementsAttributeMappingTable();
         await generateSolarSystemDistancesTable();
         console.log("Running VACUUM Command.")
@@ -111,13 +113,49 @@ async function addEffectCategories() {
 async function alterEffectCategory(effectId, category) {
     await new Promise((res, rej) => {
         db.exec(`UPDATE dgmEffects SET effectCategory = ${category} WHERE effectID = ${effectId}`, (err, result) => {
-                if(err) {
-                    rej(err);
-                } else {
-                    res(result);
-                }
-            });
+            if(err) {
+                rej(err);
+            } else {
+                res(result);
+            }
+        });
+    });
+}
+
+async function addTypeRadii() {
+    const file = fs.readFileSync(typesFile, 'utf8');
+    let typesYaml = yaml.parse(file);
+
+    await new Promise((res, rej) => {
+        db.exec(`ALTER TABLE invTypes ADD radius FLOAT;`, (err, result) => {
+            if(err) {
+                rej(err);
+            } else {
+                res(result);
+            }
+        });
     })
+
+    for(let typeId of Object.keys(typesYaml)) {
+        let radius = typesYaml[typeId].radius;
+
+        if(radius) {
+            await addTypeRadius(typeId, radius);
+        }
+    }
+}
+
+async function addTypeRadius(typeId, radius) {
+    console.log(`Adding radius to typeId ${typeId}`);
+    await new Promise((res, rej) => {
+        db.exec(`UPDATE invTypes SET radius = ${radius} WHERE typeID = ${typeId}`, (err, result) => {
+            if(err) {
+                rej(err);
+            } else {
+                res(result);
+            }
+        });
+    });
 }
 
 async function generateSkillRequirementsAttributeMappingTable() {
