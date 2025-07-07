@@ -1,7 +1,6 @@
 const fs = require("fs");
 const sqlite = require("sqlite3");
 const yaml = require("yaml");
-const { StringDecoder } = require('node:string_decoder');
 
 const MAX_LY_RANGE = 9460000000000000 * 12;
 
