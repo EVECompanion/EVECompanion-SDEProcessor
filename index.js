@@ -36,7 +36,8 @@ if(process.argv.length < 4) {
 const sourceFile = process.argv[2];
 const effectsFile = process.argv[3];
 const typesFile = process.argv[4];
-const targetFile = process.argv[5];
+const attributesFile = process.argv[5];
+const targetFile = process.argv[6];
 
 console.log(sourceFile);
 console.log(targetFile);
@@ -79,6 +80,7 @@ db.all("select name from sqlite_master where type='table'", (err, tables) => {
     Promise.all(promises).then(async () => {
         await addEffectCategories();
         await addTypeRadii();
+        await addAttributeRawNames();
         await generateSkillRequirementsAttributeMappingTable();
         await generateSolarSystemDistancesTable();
         console.log("Running VACUUM Command.")
@@ -148,6 +150,42 @@ async function addTypeRadius(typeId, radius) {
     console.log(`Adding radius to typeId ${typeId}`);
     await new Promise((res, rej) => {
         db.exec(`UPDATE invTypes SET radius = ${radius} WHERE typeID = ${typeId}`, (err, result) => {
+            if(err) {
+                rej(err);
+            } else {
+                res(result);
+            }
+        });
+    });
+}
+
+async function addAttributeRawNames() {
+    const file = fs.readFileSync(attributesFile, 'utf8');
+    let attributesYaml = yaml.parse(file);
+
+    await new Promise((res, rej) => {
+        db.exec(`ALTER TABLE dgmAttributeTypes ADD attributeRawName VARCHAR(100);`, (err, result) => {
+            if(err) {
+                rej(err);
+            } else {
+                res(result);
+            }
+        });
+    })
+
+    for(let attributeID of Object.keys(attributesYaml)) {
+        let name = attributesYaml[attributeID].name;
+
+        if(name) {
+            await addAttributeRawName(attributeID, name);
+        }
+    }
+}
+
+async function addAttributeRawName(attributeID, name) {
+    console.log(`Adding name to attributeId ${attributeID}`);
+    await new Promise((res, rej) => {
+        db.exec(`UPDATE dgmAttributeTypes SET attributeRawName = \"${name}\" WHERE attributeID = ${attributeID}`, (err, result) => {
             if(err) {
                 rej(err);
             } else {
