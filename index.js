@@ -1,6 +1,7 @@
 const fs = require("fs");
 const sqlite = require("sqlite3");
 const yaml = require("yaml");
+const dataPatches = require("./data_patches.json");
 
 const MAX_LY_RANGE = 9460000000000000 * 12;
 
@@ -82,6 +83,7 @@ db.all("select name from sqlite_master where type='table'", (err, tables) => {
         await addTypeRadii();
         await addAttributeRawNames();
         await generateSkillRequirementsAttributeMappingTable();
+        await applyDataPatches();
         await generateSolarSystemDistancesTable();
         console.log("Running VACUUM Command.")
 
@@ -234,6 +236,26 @@ async function generateSkillRequirementsAttributeMappingTable() {
             });
         });
     }
+}
+
+async function applyDataPatches() {
+    console.log("Applying data patches.");
+
+    for(let patch of dataPatches) {
+        console.log(`Applying patch for ${patch.effectName}`);
+        await new Promise((res, rej) => {
+            db.exec(`UPDATE dgmEffects SET modifierInfo = \"${patch.modifierInfo}\" WHERE effectName = \"${patch.effectName}\"`, (err, result) => {
+                if(err) {
+                    rej(err);
+                } else {
+                    console.log("Applied patch for effect: " + patch.effectName);
+                    res();
+                }
+            });
+        });
+    }   
+
+    console.log("Done Applying data patches.");
 }
 
 async function generateSolarSystemDistancesTable() {
