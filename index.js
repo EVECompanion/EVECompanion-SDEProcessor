@@ -241,6 +241,30 @@ async function generateSkillRequirementsAttributeMappingTable() {
 async function applyDataPatches() {
     console.log("Applying data patches.");
 
+    // Insert the velocityBoost attribute
+    await new Promise((res, rej) => {
+        db.exec("INSERT INTO dgmAttributeTypes(attributeID, attributeRawName, published, defaultValue, highIsGood, stackable) VALUES(-1, 'velocityBoost', 1, 0, 1, 1)", (err, result) => {
+            if(err) {
+                rej(err);
+            } else {
+                console.log("Added velocityBoost attribute.");
+                res();
+            }
+        });
+    });
+
+    // Insert the velocityBoost effect
+    await new Promise((res, rej) => {
+        db.exec("INSERT INTO dgmEffects(effectID, effectName, effectCategory, electronicChance, isAssistance, isOffensive, isWarpSafe, propulsionChance, rangeChance, modifierInfo) VALUES(-1, 'velocityBoost', 0, 0, 0, 0, 1, 0, 0, '- domain: itemID\r\n  func: ItemModifier\r\n  modifiedAttributeID: -1\r\n  modifyingAttributeID: 4\r\n  operation: 5\r\n- domain: itemID\r\n  func: ItemModifier\r\n  modifiedAttributeID: 37\r\n  modifyingAttributeID: -1\r\n  operation: 6')", (err, result) => {
+            if(err) {
+                rej(err);
+            } else {
+                console.log("Added velocityBoost attribute.");
+                res();
+            }
+        });
+    });
+
     for(let patch of dataPatches) {
         console.log(`Applying patch for ${patch.effectName}`);
         await new Promise((res, rej) => {
