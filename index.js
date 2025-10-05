@@ -265,6 +265,18 @@ async function applyDataPatches() {
         });
     });
 
+    // Fix the online effect
+    await new Promise((res, rej) => {
+        db.exec("UPDATE dgmEffects SET effectCategory = 4 WHERE effectName = 'online'", (err, result) => {
+            if(err) {
+                rej(err);
+            } else {
+                console.log("Fixed online effect.");
+                res();
+            }
+        });
+    });
+
     for(let patch of dataPatches) {
         console.log(`Applying patch for ${patch.effectName}`);
         await new Promise((res, rej) => {
