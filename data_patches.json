@@ -26,5 +26,13 @@
     {
         "effectName": "moduleBonusAfterburner",
         "modifierInfo": "- domain: shipID\r\n  func: ItemModifier\r\n  modifiedAttributeID: 4\r\n  modifyingAttributeID: 796\r\n  operation: 2\r\n- domain: shipID\r\n  func: ItemModifier\r\n  modifiedAttributeID: -1\r\n  modifyingAttributeID: 567\r\n  operation: 2\r\n- domain: shipID\r\n  func: ItemModifier\r\n  modifiedAttributeID: -1\r\n  modifyingAttributeID: 20\r\n  operation: 4"
+    },
+    {
+        "effectName": "hardPointModifierEffect",
+        "modifierInfo": "- domain: shipID\r\n  func: ItemModifier\r\n  modifiedAttributeID: 101\r\n  modifyingAttributeID: 1369\r\n  operation: 2\r\n- domain: shipID\r\n  func: ItemModifier\r\n  modifiedAttributeID: 102\r\n  modifyingAttributeID: 1368\r\n  operation: 2"
+    },
+    {
+        "effectName": "slotModifier",
+        "modifierInfo": "- domain: shipID\r\n  func: ItemModifier\r\n  modifiedAttributeID: 14\r\n  modifyingAttributeID: 1374\r\n  operation: 2\r\n- domain: shipID\r\n  func: ItemModifier\r\n  modifiedAttributeID: 13\r\n  modifyingAttributeID: 1375\r\n  operation: 2\r\n- domain: shipID\r\n  func: ItemModifier\r\n  modifiedAttributeID: 12\r\n  modifyingAttributeID: 1376\r\n  operation: 2"
     }
 ]
